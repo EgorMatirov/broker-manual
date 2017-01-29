@@ -12,6 +12,7 @@ import (
 	"github.com/bunsanorg/broker/go/bunsan/broker"
 	"github.com/bunsanorg/broker/go/bunsan/broker/service"
 	"github.com/bunsanorg/broker/go/bunsan/broker/worker"
+	"github.com/bacsorg/problems/go/bacs/problem/decoder"
 	"github.com/bunsanorg/pm/go/bunsan/pm"
 )
 
@@ -21,21 +22,28 @@ type testRequest struct {
 
 func (r *testRequest) WriteStatus(status broker.Status) error {
     log.Print("STATUS:")
-    b, err := json.Marshal(status)
-    if err != nil {
-            log.Print("error:", err)
-    }
-	log.Print(string(b))
+	log.Print("Code:")
+	log.Print(status.Code)
+	log.Print("Reason:")
+	log.Print(status.Reason)
+	log.Print("Data:")
+	log.Print(string(status.Data))
     return nil
 }
 
 func (r *testRequest) WriteResult(result broker.Result) error {
     log.Print("RESULT:")
-    b, err := json.Marshal(result)
-    if err != nil {
-            log.Print("error:", err)
-    }
-	log.Print(string(b))
+	log.Print("Status:")
+	log.Print(result.Status.String())
+	log.Print("Reason: ")
+	log.Print(result.Reason)
+	log.Print("Data:")
+	res, err := decoder.SingleResultDecoder.DecodeToText(result.Data)
+	if err != nil {
+		return err
+	}
+	log.Print(res)
+	log.Print("Log:")
     log.Print(string(result.Log))
     return nil
 }
